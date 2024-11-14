@@ -19,3 +19,7 @@ async function imageUploadUtil(file) {
 const upload = multer({ storage });
 
 module.exports = { upload, imageUploadUtil };
+
+// cloud_name: 'djzzbppqv',
+//     api_key: '878685633687996',
+//     api_secret: 'PfrMKU0YsItOBHD82ecWbPLunTQ',
