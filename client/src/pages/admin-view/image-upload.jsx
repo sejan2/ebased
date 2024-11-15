@@ -39,6 +39,7 @@ function ProductImageUpload({ imageFile, setImageFile, uploadedImage, setUploade
         const response = await axios.post(
             `${process.env.VITE_API_URL}/api/admin/products/upload-image`,
             data,
+            { withCredentials: true }
 
         );
         console.log(response, "response");
