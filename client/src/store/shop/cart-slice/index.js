@@ -13,7 +13,7 @@ export const addToCart = createAsyncThunk(
     "cart/addToCart",
     async ({ userId, productId, quantity }) => {
         const response = await axios.post(
-            'https://mern-projects-nieh.onrender.com/api/shop/cart/add',
+            `${import.meta.env.VITE_API_URL}/api/shop/cart/add`,
             {
                 userId,
                 productId,
@@ -29,7 +29,7 @@ export const fetchCartItems = createAsyncThunk(
     "cart/fetchCartItems",
     async (userId) => {
         const response = await axios.get(
-            `https://mern-projects-nieh.onrender.com/api/shop/cart/get/${userId}`
+            `${import.meta.env.VITE_API_URL}/api/shop/cart/get/${userId}`
         );
 
         return response.data;
@@ -40,7 +40,7 @@ export const deleteCartItem = createAsyncThunk(
     "cart/deleteCartItem",
     async ({ userId, productId }) => {
         const response = await axios.delete(
-            `https://mern-projects-nieh.onrender.com/api/shop/cart/${userId}/${productId}`
+            `${import.meta.env.VITE_API_URL}/api/shop/cart/${userId}/${productId}`
         );
 
         return response.data;
@@ -51,7 +51,7 @@ export const updateCartQuantity = createAsyncThunk(
     "cart/updateCartQuantity",
     async ({ userId, productId, quantity }) => {
         const response = await axios.put(
-            'https://mern-projects-nieh.onrender.com/api/shop/cart/update-cart',
+            `${import.meta.env.VITE_API_URL}/api/shop/cart/update-cart`,
             {
                 userId,
                 productId,
