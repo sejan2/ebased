@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 
 
-function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart }) {
+function ShoppingProductTile({ product, handleGetProductDetails, handleAddToCart }) {
 
     return (
         <Card className="w-full max-w-sm mx-auto">
@@ -37,7 +37,7 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
 
             </div>
             <CardFooter>
-                <Button onClick={() => handleAddtoCart(product?._id)} className="w-full">
+                <Button onClick={() => handleAddToCart(product?._id)} className="w-full">
                     Add to cart
                 </Button>
 
