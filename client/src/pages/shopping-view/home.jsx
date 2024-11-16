@@ -81,30 +81,20 @@ function ShoppingHome() {
     }
 
     function handleAddToCart(getCurrentProductId) {
-        const navigate = useNavigate();
-        const { isAuthenticated, user } = useSelector((state) => state.auth);
-        const dispatch = useDispatch();
-
-        if (!isAuthenticated) {
-            // Redirect to login page with a state to redirect after login
-            navigate("/auth/login", { state: { from: window.location.pathname } });
-        } else {
-            // User is authenticated, proceed with adding to the cart
-            dispatch(
-                addToCart({
-                    userId: user?.id,
-                    productId: getCurrentProductId,
-                    quantity: 1,
-                })
-            ).then((data) => {
-                if (data?.payload?.success) {
-                    dispatch(fetchCartItems(user?.id));
-                    toast({
-                        title: "Product added to cart successfully",
-                    });
-                }
-            });
-        }
+        dispatch(
+            addToCart({
+                userId: user?.id,
+                productId: getCurrentProductId,
+                quantity: 1,
+            })
+        ).then((data) => {
+            if (data?.payload?.success) {
+                dispatch(fetchCartItems(user?.id));
+                toast({
+                    title: "Product is added to cart",
+                });
+            }
+        });
     }
     console.log(addToCart);
     useEffect(() => {
