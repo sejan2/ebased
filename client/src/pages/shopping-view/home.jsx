@@ -15,7 +15,6 @@ import {
     CloudLightning,
     Heater,
     Images,
-    Shirt,
     ShirtIcon,
     ShoppingBasket,
     UmbrellaIcon,
@@ -25,13 +24,8 @@ import {
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-// import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-
-
-// import { getFeatureImages } from "@/store/common-slice";
 
 const categoriesWithIcon = [
     { id: "men", label: "Men", icon: ShirtIcon },
@@ -42,24 +36,18 @@ const categoriesWithIcon = [
 ];
 
 const brandsWithIcon = [
-    { id: "nike", label: "Nike", icon: Shirt },
+    { id: "nike", label: "Nike", icon: ShoppingBasket },
     { id: "adidas", label: "Adidas", icon: WashingMachine },
-    { id: "puma", label: "Puma", icon: ShoppingBasket },
-    { id: "levi", label: "Levi's", icon: Airplay },
-    { id: "zara", label: "Zara", icon: Images },
-    { id: "h&m", label: "H&M", icon: Heater },
+    { id: "puma", label: "Puma", icon: Airplay },
+    { id: "levi", label: "Levi's", icon: Images },
+    { id: "zara", label: "Zara", icon: Heater },
 ];
+
 function ShoppingHome() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const { productList, productDetails } = useSelector(
-        (state) => state.shopProducts
-    );
-
-
+    const { productList, productDetails } = useSelector((state) => state.shopProducts);
     const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-    const slides = [bannerOne, bannerTwo, bannerThree]
-
-
+    const slides = [bannerOne, bannerTwo, bannerThree];
     const { user } = useSelector((state) => state.auth);
 
     const dispatch = useDispatch();
@@ -68,10 +56,7 @@ function ShoppingHome() {
 
     function handleNavigateToListingPage(getCurrentItem, section) {
         sessionStorage.removeItem("filters");
-        const currentFilter = {
-            [section]: [getCurrentItem.id],
-        };
-
+        const currentFilter = { [section]: [getCurrentItem.id] };
         sessionStorage.setItem("filters", JSON.stringify(currentFilter));
         navigate(`/shop/listing`);
     }
@@ -81,6 +66,10 @@ function ShoppingHome() {
     }
 
     function handleAddToCart(getCurrentProductId) {
+        if (!user) {
+            navigate("/auth/login");
+            return;
+        }
         dispatch(
             addToCart({
                 userId: user?.id,
@@ -90,13 +79,11 @@ function ShoppingHome() {
         ).then((data) => {
             if (data?.payload?.success) {
                 dispatch(fetchCartItems(user?.id));
-                toast({
-                    title: "Product is added to cart",
-                });
+                toast({ title: "Product is added to cart" });
             }
         });
     }
-    console.log(addToCart);
+
     useEffect(() => {
         if (productDetails !== null) setOpenDetailsDialog(true);
     }, [productDetails]);
@@ -107,72 +94,53 @@ function ShoppingHome() {
         }, 3500);
 
         return () => clearInterval(timer);
-    },);
+    }, []);
 
     useEffect(() => {
-        dispatch(
-            fetchAllFilteredProducts({
-                filterParams: {},
-                sortParams: "price-lowtohigh",
-            })
-        );
+        dispatch(fetchAllFilteredProducts({ filterParams: {}, sortParams: "price-lowtohigh" }));
     }, [dispatch]);
-
-
-
-    console.log(slides);
 
     return (
         <div className="flex flex-col min-h-screen">
             <div className="relative w-full h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
-                {slides && slides.length > 0
-                    ? slides.map((slide, index) => (
-                        <img
-                            src={slide}
-                            key={index}
-                            className={`${index === currentSlide ? "opacity-100" : "opacity-0"}
-                            absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
-                        />
-                    ))
-                    : null}
+                {slides.map((slide, index) => (
+                    <img
+                        src={slide}
+                        key={index}
+                        className={`${index === currentSlide ? "opacity-100" : "opacity-0"
+                            } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                        alt={`Slide ${index + 1}`}
+                    />
+                ))}
                 <Button
                     variant="outline"
                     size="icon"
                     onClick={() =>
-                        setCurrentSlide(
-                            (prevSlide) =>
-                                (prevSlide - 1 + slides.length) %
-                                slides.length
-                        )
+                        setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length)
                     }
-                    className="absolute transform -translate-y-1/2 top-1/2 left-4 bg-white/80"
+                    className="absolute p-2 transform -translate-y-1/2 rounded-full top-1/2 left-4 bg-white/80"
                 >
-                    <ChevronLeftIcon className="w-4 h-4" />
+                    <ChevronLeftIcon className="w-6 h-6" />
                 </Button>
                 <Button
                     variant="outline"
                     size="icon"
                     onClick={() =>
-                        setCurrentSlide(
-                            (prevSlide) => (prevSlide + 1) % slides.length
-                        )
+                        setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
                     }
-                    className="absolute transform -translate-y-1/2 top-1/2 right-4 bg-white/80"
+                    className="absolute p-2 transform -translate-y-1/2 rounded-full top-1/2 right-4 bg-white/80"
                 >
-                    <ChevronRightIcon className="w-4 h-4" />
+                    <ChevronRightIcon className="w-6 h-6" />
                 </Button>
             </div>
             <section className="py-12 bg-gray-50">
                 <div className="container px-4 mx-auto">
-                    <h2 className="mb-8 text-3xl font-bold text-center">
-                        Shop by category
-                    </h2>
+                    <h2 className="mb-8 text-3xl font-bold text-center">Shop by Category</h2>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
                         {categoriesWithIcon.map((categoryItem) => (
                             <Card
-                                onClick={() =>
-                                    handleNavigateToListingPage(categoryItem, "category")
-                                }
+                                key={categoryItem.id}
+                                onClick={() => handleNavigateToListingPage(categoryItem, "category")}
                                 className="transition-shadow cursor-pointer hover:shadow-lg"
                             >
                                 <CardContent className="flex flex-col items-center justify-center p-6">
@@ -191,6 +159,7 @@ function ShoppingHome() {
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
                         {brandsWithIcon.map((brandItem) => (
                             <Card
+                                key={brandItem.id}
                                 onClick={() => handleNavigateToListingPage(brandItem, "brand")}
                                 className="transition-shadow cursor-pointer hover:shadow-lg"
                             >
@@ -206,22 +175,21 @@ function ShoppingHome() {
 
             <section className="py-12">
                 <div className="container px-4 mx-auto">
-                    <h2 className="mb-8 text-3xl font-bold text-center">
-                        Feature Products
-                    </h2>
+                    <h2 className="mb-8 text-3xl font-bold text-center">Featured Products</h2>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                        {productList && productList.length > 0
-                            ? productList.map((productItem) => (
+                        {productList &&
+                            productList.map((productItem) => (
                                 <ShoppingProductTile
+                                    key={productItem.id}
                                     handleGetProductDetails={handleGetProductDetails}
                                     product={productItem}
                                     handleAddToCart={handleAddToCart}
                                 />
-                            ))
-                            : null}
+                            ))}
                     </div>
                 </div>
             </section>
+
             <ProductDetailsDialog
                 open={openDetailsDialog}
                 setOpen={setOpenDetailsDialog}
