@@ -22,55 +22,67 @@ import Footer from "./pages/shopping-view/footer"
 
 
 
+import { Navigate } from "react-router-dom";
+
 function App() {
-
-
   const { isAuthenticated, user, isLoading } = useSelector((state) =>
     state.auth
   );
   const dispatch = useDispatch();
+
   useEffect(() => {
-    const token = JSON.parse(sessionStorage.getItem('token'))
+    const token = JSON.parse(sessionStorage.getItem('token'));
     dispatch(checkAuth(token));
   }, [dispatch]);
-  if (isLoading) return <div>Loading</div>
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-
       <Routes>
+        {/* Root route: check authentication */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated
+              ? <Navigate to="/shop/home" replace />
+              : <Navigate to="/auth/login" replace />
+          }
+        />
+
         <Route path="/auth" element={
           <CheckAuth isAuthenticated={isAuthenticated} user={user}>
             <AuthLayout />
           </CheckAuth>
-        } >
-
+        }>
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
+
         <Route path="/admin" element={
           <CheckAuth isAuthenticated={isAuthenticated} user={user}>
             <AdminLayout />
           </CheckAuth>
-        } >
+        }>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
         </Route>
+
         <Route path="/shop" element={
           <CheckAuth isAuthenticated={isAuthenticated} user={user}>
             <ShoppingViewLayout />
           </CheckAuth>
-
-        } >
+        }>
           <Route path="*" element={<NotFound />} />
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="account" element={<ShoppingAccount />} />
         </Route>
       </Routes>
-    </div >
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
+
