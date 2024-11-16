@@ -84,7 +84,7 @@ export const checkAuth = createAsyncThunk(
             {
 
                 headers: {
-                    Authorization: `Bearer${token}`,
+                    Authorization: `Bearer ${token}`,
                     "Cache-Control":
                         "no-store, no-cache, must-revalidate, proxy-revalidate",
                 },
@@ -160,5 +160,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { setUser } = authSlice.actions;
+export const { setUser, resetTokenAndCredentials } = authSlice.actions;
 export default authSlice.reducer;

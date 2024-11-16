@@ -85,7 +85,7 @@ const loginUser = async (req, res) => {
         // });
         res.status(200).json({
             success: true,
-            message: "ogged in successfully",
+            message: "Logged in successfully",
             token,
             user: {
                 email: checkUser.email,
