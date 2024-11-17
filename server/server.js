@@ -1,4 +1,5 @@
 require('dotenv').config();
+// const compression = require('compression');
 
 const express = require('express');
 const monGoose = require('mongoose');
@@ -8,6 +9,7 @@ const authRouter = require('./routes/auth/auth-routes');
 const adminProductsRouter = require('./routes/admin/product-routes')
 const shopProductsRouter = require('./routes/shop/products-route');
 const shopCartRouter = require('./routes/shop/cart-routes');
+const compression = require('compression');
 
 
 
@@ -32,8 +34,10 @@ app.use(
         credentials: true
     })
 );
+app.use(compression());
+app.use(express.static('build', { maxAge: '1y' }));
 app.use(cookieParser());
-
+app.use(express.json({ limit: '10kb' }));
 app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use("/api/admin/products", adminProductsRouter);
