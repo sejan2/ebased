@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./store/auth-slice";
 
-// React lazy import for components
+// React lazy import for components for fast load
 import React, { Suspense } from "react";
 
 const AuthLogin = React.lazy(() => import("./pages/auth/login"));
@@ -41,10 +41,10 @@ function App() {
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-      {/* Suspense wraps lazy-loaded routes */}
+
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          {/* Root route to handle base URL */}
+
           <Route
             path="/"
             element={
@@ -56,7 +56,6 @@ function App() {
             }
           />
 
-          {/* Authentication Routes */}
           <Route
             path="/auth"
             element={
@@ -69,7 +68,6 @@ function App() {
             <Route path="register" element={<AuthRegister />} />
           </Route>
 
-          {/* Admin Routes */}
           <Route
             path="/admin"
             element={
@@ -83,7 +81,6 @@ function App() {
             <Route path="orders" element={<AdminOrders />} />
           </Route>
 
-          {/* Shopping Routes */}
           <Route
             path="/shop"
             element={
