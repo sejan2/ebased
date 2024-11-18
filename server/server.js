@@ -1,49 +1,58 @@
 require('dotenv').config();
-// const compression = require('compression');
 
 const express = require('express');
-const monGoose = require('mongoose');
+const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const authRouter = require('./routes/auth/auth-routes');
-const adminProductsRouter = require('./routes/admin/product-routes')
-const shopProductsRouter = require('./routes/shop/products-route');
-const shopCartRouter = require('./routes/shop/cart-routes');
 const compression = require('compression');
 
+// Import your routers
+const authRouter = require('./routes/auth/auth-routes');
+const adminProductsRouter = require('./routes/admin/product-routes');
+const shopProductsRouter = require('./routes/shop/products-route');
+const shopCartRouter = require('./routes/shop/cart-routes');
 
-
-monGoose.connect(process.env.MONGO_URL).then(() => console.log('mongo connect')).catch(error => console.log(error))
-
+// Connect to MongoDB
+mongoose
+    .connect(process.env.MONGO_URL)
+    .then(() => console.log('MongoDB connected'))
+    .catch((error) => console.log('MongoDB connection error:', error));
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
+// CORS Configuration
 app.use(
     cors({
-        origin: process.env.CLIENT_BASE_URL,
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        origin: process.env.CLIENT_BASE_URL, // Ensure this is correctly set in .env
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow necessary HTTP methods
         allowedHeaders: [
-            "content-type",
-            "Authorization",
-            "Cache-control",
-            "Expires",
-            "Pragma"
+            'Content-Type',
+            'Authorization',
+            'Cache-Control',
+            'Expires',
+            'Pragma',
+            'Accept',
+            'Origin',
         ],
-        credentials: true
+        credentials: true, // Allow cookies and credentials
     })
 );
-app.use(compression());
-app.use(express.static('build', { maxAge: '1y' }));
+
+// Handle OPTIONS preflight requests
+app.options('*', cors());
+
+// Middleware
+app.use(compression()); // Compress responses
+app.use(express.static('build', { maxAge: '1y' })); // Serve static files with caching
 app.use(cookieParser());
-app.use(express.json({ limit: '10kb' }));
-app.use(express.json());
+app.use(express.json({ limit: '10kb' })); // Parse JSON requests with size limit
+
+// Routers
 app.use('/api/auth', authRouter);
-app.use("/api/admin/products", adminProductsRouter);
+app.use('/api/admin/products', adminProductsRouter);
 app.use('/api/shop/products', shopProductsRouter);
 app.use('/api/shop/cart', shopCartRouter);
 
-
-
-app.listen(PORT, () => console.log(`server is running on port ${PORT}`))
+// Start the server
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
