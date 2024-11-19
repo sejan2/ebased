@@ -44,30 +44,19 @@ function App() {
 
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
+          {/* Default route redirects to the Home page */}
+          <Route path="/" element={<Navigate to="/shop/home" replace />} />
 
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/shop/home" replace />
-              ) : (
-                <Navigate to="/auth/login" replace />
-              )
-            }
-          />
-
+          {/* Authentication Routes */}
           <Route
             path="/auth"
-            element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-                <AuthLayout />
-              </CheckAuth>
-            }
+            element={<AuthLayout />}
           >
             <Route path="login" element={<AuthLogin />} />
             <Route path="register" element={<AuthRegister />} />
           </Route>
 
+          {/* Admin Routes (Protected) */}
           <Route
             path="/admin"
             element={
@@ -81,20 +70,18 @@ function App() {
             <Route path="orders" element={<AdminOrders />} />
           </Route>
 
+          {/* Shopping Routes */}
           <Route
             path="/shop"
-            element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-                <ShoppingViewLayout />
-              </CheckAuth>
-            }
+            element={<ShoppingViewLayout />}
           >
-            <Route path="*" element={<NotFound />} />
             <Route path="home" element={<ShoppingHome />} />
             <Route path="listing" element={<ShoppingListing />} />
             <Route path="account" element={<ShoppingAccount />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
+
       </Suspense>
     </div>
   );

@@ -12,17 +12,29 @@ import { useDispatch, useSelector } from "react-redux";
 // import { setProductDetails } from "@/store/shop/products-slice";
 
 
+import { useNavigate, useLocation } from "react-router-dom";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
     const { toast } = useToast();
     const { cartItems } = useSelector((state) => state.shopCart);
-    const { user } = useSelector((state) => state.auth);
+    const { user, isAuthenticated } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
+    const location = useLocation();
 
     function handleAddToCart(getCurrentProductId, getTotalStock) {
-        let getCartItems = cartItems.items || [];
+        if (!isAuthenticated) {
+            // Redirect to login page with redirectTo parameter
+            toast({
+                title: "Please log in to add items to your cart",
+                variant: "destructive",
+            });
 
+            navigate(`/auth/login?redirectTo=${encodeURIComponent(location.pathname)}`);
+            return;
+        }
+
+        let getCartItems = cartItems.items || [];
         if (getCartItems.length) {
             const indexOfCurrentItem = getCartItems.findIndex(
                 (item) => item.productId === getCurrentProductId
@@ -31,14 +43,14 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 const getQuantity = getCartItems[indexOfCurrentItem].quantity;
                 if (getQuantity + 1 > getTotalStock) {
                     toast({
-                        title: `Only ${getQuantity} quantity can be added for this item`,
+                        title: `Only ${getTotalStock} quantity can be added for this item`,
                         variant: "destructive",
                     });
-
                     return;
                 }
             }
         }
+
         dispatch(
             addToCart({
                 userId: user?.id,
@@ -49,7 +61,12 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             if (data?.payload?.success) {
                 dispatch(fetchCartItems(user?.id));
                 toast({
-                    title: "Product is added to cart",
+                    title: "Product added to cart successfully!",
+                });
+            } else {
+                toast({
+                    title: data?.payload?.message || "Failed to add product to cart",
+                    variant: "destructive",
                 });
             }
         });

@@ -5,8 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 // import { LoginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const initialState = {
     email: "",
@@ -15,20 +15,25 @@ const initialState = {
 
 function AuthLogin() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [formData, setFormData] = useState(initialState);
     const dispatch = useDispatch();
     const { toast } = useToast();
+    const { isAuthenticated } = useSelector((state) => state.auth);
+
+    const redirectTo = new URLSearchParams(location.search).get("redirectTo") || "/shop/home";
 
     function onSubmit(event) {
         event.preventDefault();
 
         dispatch(loginUser(formData)).then((data) => {
             if (data?.payload?.success) {
-                console.log(data);
-
                 toast({
                     title: data?.payload?.message,
                 });
+
+                // Navigate to redirectTo on successful login
+                navigate(redirectTo);
             } else {
                 toast({
                     title: data?.payload?.message,
@@ -37,6 +42,12 @@ function AuthLogin() {
             }
         });
     }
+
+    if (isAuthenticated) {
+        navigate(redirectTo);
+        return null;
+    }
+
 
     return (
         <div className="w-full max-w-md mx-auto space-y-6">
