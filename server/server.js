@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 // CORS Configuration
 app.use(
     cors({
-        origin: process.env.CLIENT_BASE_URL, // Ensure this is correctly set in .env
+        origin: process.env.CLIENT_BASE_URL,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow necessary HTTP methods
         allowedHeaders: [
             'Content-Type',
@@ -35,18 +35,18 @@ app.use(
             'Accept',
             'Origin',
         ],
-        credentials: true, // Allow cookies and credentials
+        credentials: true,
     })
 );
 
-// Handle OPTIONS preflight requests
+
 app.options('*', cors());
 
 // Middleware
-app.use(compression()); // Compress responses
-app.use(express.static('build', { maxAge: '1y' })); // Serve static files with caching
+app.use(compression());
+app.use(express.static('build', { maxAge: '1y' }));
 app.use(cookieParser());
-app.use(express.json({ limit: '10kb' })); // Parse JSON requests with size limit
+app.use(express.json({ limit: '10kb' }));
 
 // Routers
 app.use('/api/auth', authRouter);

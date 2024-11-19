@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 // import { setProductDetails } from "@/store/shop/products-slice";
 
 
+
 import { useNavigate, useLocation } from "react-router-dom";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
@@ -24,7 +25,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
     function handleAddToCart(getCurrentProductId, getTotalStock) {
         if (!isAuthenticated) {
-            // Redirect to login page with redirectTo parameter
+
             toast({
                 title: "Please log in to add items to your cart",
                 variant: "destructive",

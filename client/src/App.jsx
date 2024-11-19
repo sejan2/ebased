@@ -1,10 +1,11 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { checkAuth } from "./store/auth-slice";
+
 
 // React lazy import for components for fast load
 import React, { Suspense } from "react";
+import { checkAuth } from "./store/auth-slice";
 
 const AuthLogin = React.lazy(() => import("./pages/auth/login"));
 const AuthRegister = React.lazy(() => import("./pages/auth/register"));
@@ -81,9 +82,8 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-
       </Suspense>
-    </div>
+    </div >
   );
 }
 
