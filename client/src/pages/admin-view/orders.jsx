@@ -1,6 +1,6 @@
 function AdminOrders() {
     return (
-        <div>kjhjhghfgf</div>
+        <div> kjhjhghfgf </div>
     );
 }
 

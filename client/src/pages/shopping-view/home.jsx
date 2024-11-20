@@ -33,6 +33,7 @@ const categoriesWithIcon = [
     { id: "kids", label: "Kids", icon: BabyIcon },
     { id: "accessories", label: "Accessories", icon: WatchIcon },
     { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
+
 ];
 
 const brandsWithIcon = [
@@ -102,13 +103,13 @@ function ShoppingHome() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <div className="relative w-full h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
+
+            <div className="relative w-full h-[30vh] sm:h-[40vh] md:h-[50vh] lg:h-[75vh] xl:h-[80vh] 2xl:h-[90vh] overflow-hidden">
                 {slides.map((slide, index) => (
                     <img
                         src={slide}
                         key={index}
-                        className={`${index === currentSlide ? "opacity-100" : "opacity-0"
-                            } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                        className={`${index === currentSlide ? "opacity-100" : "opacity-0"} absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
                         alt={`Slide ${index + 1}`}
                     />
                 ))}
@@ -153,25 +154,6 @@ function ShoppingHome() {
                 </div>
             </section>
 
-            <section className="py-12 bg-gray-50">
-                <div className="container px-4 mx-auto">
-                    <h2 className="mb-8 text-3xl font-bold text-center">Shop by Brand</h2>
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-                        {brandsWithIcon.map((brandItem) => (
-                            <Card
-                                key={brandItem.id}
-                                onClick={() => handleNavigateToListingPage(brandItem, "brand")}
-                                className="transition-shadow cursor-pointer hover:shadow-lg"
-                            >
-                                <CardContent className="flex flex-col items-center justify-center p-6">
-                                    <brandItem.icon className="w-12 h-12 mb-4 text-primary" />
-                                    <span className="font-bold">{brandItem.label}</span>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             <section className="py-12">
                 <div className="container px-4 mx-auto">

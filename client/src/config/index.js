@@ -143,6 +143,7 @@ export const shoppingViewHeaderMenuItems = [
         label: "Search",
         path: "/shop/search",
     },
+
 ];
 export const categoryOptionsMap = {
     men: "Men",

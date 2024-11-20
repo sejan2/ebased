@@ -1,12 +1,10 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-
-
-// React lazy import for components for fast load
 import React, { Suspense } from "react";
 import { checkAuth } from "./store/auth-slice";
 
+// Lazy imports
 const AuthLogin = React.lazy(() => import("./pages/auth/login"));
 const AuthRegister = React.lazy(() => import("./pages/auth/register"));
 const AuthLayout = React.lazy(() => import("./components/auth/layout"));
@@ -42,17 +40,22 @@ function App() {
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          {/* Default route redirects to the Home page */}
-          <Route path="/" element={<Navigate to="/shop/home" replace />} />
+          {/* Default Route */}
+          <Route
+            path="/"
+            element={
+              isAuthenticated
+                ? user?.role === "admin"
+                  ? <Navigate to="/admin/dashboard" replace />
+                  : <Navigate to="/shop/home" replace />
+                : <Navigate to="/shop/home" replace />
+            }
+          />
 
           {/* Authentication Routes */}
-          <Route
-            path="/auth"
-            element={<AuthLayout />}
-          >
+          <Route path="/auth" element={<AuthLayout />}>
             <Route path="login" element={<AuthLogin />} />
             <Route path="register" element={<AuthRegister />} />
           </Route>
@@ -61,7 +64,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <CheckAuth isAuthenticated={isAuthenticated} user={user} isAdminRequired={true}>
                 <AdminLayout />
               </CheckAuth>
             }
@@ -71,10 +74,14 @@ function App() {
             <Route path="orders" element={<AdminOrders />} />
           </Route>
 
-          {/* Shopping Routes */}
+          {/* Shop Routes (Open for all users, but admin is redirected) */}
           <Route
             path="/shop"
-            element={<ShoppingViewLayout />}
+            element={
+              user?.role === "admin"
+                ? <Navigate to="/admin/dashboard" replace /> // Redirect admins from shop to admin dashboard
+                : <ShoppingViewLayout /> // Non-admin users can access shop routes
+            }
           >
             <Route path="home" element={<ShoppingHome />} />
             <Route path="listing" element={<ShoppingListing />} />
@@ -82,8 +89,10 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
+
+
       </Suspense>
-    </div >
+    </div>
   );
 }
 

@@ -7,7 +7,7 @@ const asyncHandler = require('express-async-handler');
 const CLIENT_SECRET_KEY = process.env.CLIENT_SECRET_KEY || 'default_secret_key';
 const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
 
-// Register
+// Register User
 const registerUser = asyncHandler(async (req, res) => {
     const { userName, email, password } = req.body;
 
@@ -16,7 +16,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (existingUser) {
         return res.status(400).json({
             success: false,
-            message: 'User already exists with the same email! Please try again.',
+            message: 'User already exists with the same email!',
         });
     }
 
@@ -37,7 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 });
 
-// Login
+// Login User
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -46,11 +46,11 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!user) {
         return res.status(404).json({
             success: false,
-            message: "User doesn't exist! Please register first.",
+            message: "User doesn't exist. Please register first.",
         });
     }
 
-    // Check password
+    // Compare password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
         return res.status(401).json({
@@ -59,14 +59,13 @@ const loginUser = asyncHandler(async (req, res) => {
         });
     }
 
-    // Generate JWT
+    // Generate JWT token (expires in 60 minutes)
     const token = jwt.sign(
         { id: user._id, role: user.role, email: user.email, userName: user.userName },
         CLIENT_SECRET_KEY,
         { expiresIn: '60m' }
     );
 
-    // Respond with token and user info
     res.status(200).json({
         success: true,
         message: 'Logged in successfully',
@@ -75,7 +74,7 @@ const loginUser = asyncHandler(async (req, res) => {
     });
 });
 
-// Logout
+// Logout User (clear token)
 const logOutUser = (req, res) => {
     res.clearCookie('token', { httpOnly: true, secure: true }).json({
         success: true,
@@ -83,7 +82,7 @@ const logOutUser = (req, res) => {
     });
 };
 
-// Auth Middleware
+// Auth Middleware (to protect routes)
 const authMiddleware = asyncHandler(async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -91,16 +90,26 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     if (!token) {
         return res.status(401).json({
             success: false,
-            message: 'Unauthorized user!',
+            message: 'Unauthorized! No token provided.',
         });
     }
 
     try {
+        // Verify JWT token
         const decoded = jwt.verify(token, CLIENT_SECRET_KEY);
-        req.user = decoded;
-        next();
+        req.user = decoded; // Attach user to the request object
+        next(); // Proceed to the next middleware/route
     } catch (error) {
         console.error('JWT Verification Error:', error.message);
+
+        // If the token is expired, send specific message
+        if (error.name === 'TokenExpiredError') {
+            return res.status(403).json({
+                success: false,
+                message: 'Token expired. Please log in again.',
+            });
+        }
+
         res.status(403).json({
             success: false,
             message: 'Invalid token! Unauthorized access.',

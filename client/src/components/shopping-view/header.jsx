@@ -1,4 +1,4 @@
-import { House, LogOut, ShoppingCart, SquareChevronDown, UserCog } from "lucide-react";
+import { House, LogOut, LogOutIcon, ShoppingCart, SquareChevronDown, User, UserCog } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetDescription, SheetTrigger, SheetHeader, SheetTitle } from "../ui/sheet";
 import { Button } from "../ui/button";
@@ -10,6 +10,7 @@ import { logoutUser, resetTokenAndCredentials } from "@/store/auth-slice";
 import { useEffect, useState } from "react";
 import UserCartWrapper from "./cart-wrapper";
 import { fetchCartItems } from "@/store/shop/cart-slice";
+
 
 
 function MenuItems() {
@@ -58,9 +59,11 @@ function HeaderRightContent() {
         </Sheet>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Avatar className="bg-black">
-                    <AvatarFallback className="font-extrabold text-white bg-black ">{user?.userName[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
+                {
+                    isAuthenticated ? <Avatar className="bg-black">
+                        <AvatarFallback className="font-extrabold text-white bg-black ">{user?.userName[0].toUpperCase()}</AvatarFallback>
+                    </Avatar> : <User />
+                }
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" className="w-56">
                 <DropdownMenuLabel>Logged in as  {user?.userName}</DropdownMenuLabel>
@@ -71,8 +74,10 @@ function HeaderRightContent() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
+                    {
+                        isAuthenticated ? <div className="flex gap-3"><LogOut className="w-4 h-4 mr-2" />
+                            Logout</div> : <div className="flex gap-3"><LogOutIcon /> Login</div>
+                    }
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
