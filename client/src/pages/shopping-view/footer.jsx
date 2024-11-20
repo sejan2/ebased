@@ -1,55 +1,130 @@
-import { Button } from "@/components/ui/button";
 import React from "react";
+import img1 from "../../assets/m.jpg";
+import img2 from "../../assets/v.png";
+import img3 from "../../assets/i.jpg";
+import { BsTelephoneFill } from "react-icons/bs";
 
 const Footer = () => {
     return (
-        <footer className="py-8 mt-12 bg-gray-300 shadow-lg">
+        <footer className="py-8 border-t border-gray-300 bg-gray-50">
             <div className="container px-4 mx-auto">
-                <div className="grid grid-cols-1 gap-8 text-muted-foreground sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold">Company</h3>
-                        <ul>
-                            <li><a href="#" className="hover:text-blue-500">About Us</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Careers</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Blog</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Contact</a></li>
+                {/* Top Section */}
+                <div className="grid grid-cols-2 gap-2 mb-6 mx-11 md:grid-cols-5">
+                    {/* Categories */}
+                    <div>
+                        <h3 className="mb-3 text-lg font-semibold text-gray-800">Categories</h3>
+                        <ul className="space-y-1">
+                            {["Men", "Women", "Kids", "Voucher"].map((item) => (
+                                <li key={item}>
+                                    <a
+                                        href="#"
+                                        className="text-gray-600 transition-colors duration-300 hover:text-gray-900"
+                                    >
+                                        {item}
+                                    </a>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold">Customer Service</h3>
-                        <ul>
-                            <li><a href="#" className="hover:text-blue-500">FAQs</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Returns</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Shipping</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Privacy Policy</a></li>
+                    {/* Accounts */}
+                    <div>
+                        <h3 className="mb-3 text-lg font-semibold text-gray-800">Accounts</h3>
+                        <ul className="space-y-1">
+                            <li>
+                                <a
+                                    href="#"
+                                    className="text-gray-600 transition-colors duration-300 hover:text-gray-900"
+                                >
+                                    My Account
+                                </a>
+                            </li>
                         </ul>
                     </div>
 
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold">Connect with Us</h3>
-                        <ul>
-                            <li><a href="#" className="hover:text-blue-500">Facebook</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Instagram</a></li>
-                            <li><a href="#" className="hover:text-blue-500">Twitter</a></li>
-                            <li><a href="#" className="hover:text-blue-500">LinkedIn</a></li>
+                    {/* Quick Links */}
+                    <div>
+                        <h3 className="mb-3 text-lg font-semibold text-gray-800">Quick Links</h3>
+                        <ul className="space-y-1">
+                            {[
+                                "Store Location",
+                                "Shipping & Returns",
+                                "Privacy Policy",
+                                "Terms & Conditions",
+                            ].map((link) => (
+                                <li key={link}>
+                                    <a
+                                        href="#"
+                                        className="text-gray-600 transition-colors duration-300 hover:text-gray-900"
+                                    >
+                                        {link}
+                                    </a>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold">Newsletter</h3>
-                        <p>Sign up for our newsletter to get the latest updates.</p>
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full p-2 border border-gray-300 rounded"
-                        />
-                        <Button>Subscribe</Button>
+                    {/* Support */}
+                    <div>
+                        <h3 className="mb-3 text-lg font-semibold text-gray-800">Support</h3>
+                        <p className="mb-2 text-gray-600">
+                            <strong>Hours:</strong> 10:00 am - 7:00 pm
+                            <p>(Except Friday & Public Holiday)</p>
+                        </p>
+                        <p className="flex items-center space-x-2 text-gray-600">
+                            <BsTelephoneFill />
+                            <span>+880 1788999000</span>
+                        </p>
+                        <p className="flex items-center space-x-2 text-gray-600">
+                            <BsTelephoneFill />
+                            <span>+880 1982333111</span>
+                        </p>
+                    </div>
+
+                    {/* Office Address */}
+                    <div>
+                        <h3 className="mb-3 text-lg font-semibold text-gray-800">Office Address</h3>
+                        <address className="mb-2 text-gray-600">
+
+
+                            <p>Ahmed Tower (9th Floor), 28 & 30,</p>                            <p> Kamal Ataturk Avenue, Banani C/A, Dhaka-1213</p>
+                        </address>
+                        <p>
+                            Email:{" "}
+                            <a
+                                href="mailto:ecommerce@sgmail.com"
+                                className="text-gray-600 transition-colors duration-300 hover:text-gray-900"
+                            >
+                                ecommerce@sgmail.com
+                            </a>
+                        </p>
+                        <p>Phone: +8802 2222 74913-4</p>
+                        <p>Fax: +02-9820913</p>
                     </div>
                 </div>
-            </div>
-            <div className="py-4 text-center text-gray-500">
-                &copy; 2024 Your Company. All Rights Reserved.
+
+                {/* Divider Line */}
+                <hr className="my-6 border-gray-300" />
+
+                {/* Bottom Section */}
+                <div className="flex flex-col items-center justify-center space-y-4">
+                    {/* Footer Text */}
+                    <p className="text-sm text-center text-gray-500">
+                        © E-commerce. All rights reserved. Maintenance by Seejan.
+                    </p>
+
+                    {/* Payment Icons */}
+                    <div className="flex items-center justify-center space-x-4">
+                        {[img1, img2, img3, img2, img1].map((src, index) => (
+                            <img
+                                key={index}
+                                src={src}
+                                alt="Payment Method"
+                                className="w-10 h-auto transition-transform duration-300 hover:scale-105"
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
         </footer>
     );

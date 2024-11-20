@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import ShoppingHeader from "./header";
+import Footer from "@/pages/shopping-view/footer";
 
 
 function ShoppingViewLayout() {
@@ -9,7 +10,7 @@ function ShoppingViewLayout() {
             <main className="flex flex-col w-full ">
                 <Outlet></Outlet>
             </main>
-
+            <Footer />
         </div>
     );
 }

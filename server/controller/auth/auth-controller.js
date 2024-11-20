@@ -5,76 +5,95 @@ const asyncHandler = require('express-async-handler');
 
 // Environment variables
 const CLIENT_SECRET_KEY = process.env.CLIENT_SECRET_KEY || 'default_secret_key';
-const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
 
-// Register User
-const registerUser = asyncHandler(async (req, res) => {
+
+// Register
+const registerUser = async (req, res) => {
     const { userName, email, password } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        return res.status(400).json({
+    try {
+        const checkUser = await User.findOne({ email });
+        if (checkUser)
+            return res.json({
+                success: false,
+                message: "User Already exists with the same email! Please try again",
+            });
+
+        const hashPassword = await bcrypt.hash(password, 12);
+        const newUser = new User({
+            userName,
+            email,
+            password: hashPassword,
+        });
+
+        await newUser.save();
+        res.status(200).json({
+            success: true,
+            message: "Registration successful",
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({
             success: false,
-            message: 'User already exists with the same email!',
+            message: "Some error occured",
         });
     }
-
-    // Hash password
-    const hashPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
-
-    // Create new user
-    const newUser = await User.create({
-        userName,
-        email,
-        password: hashPassword,
-    });
-
-    res.status(201).json({
-        success: true,
-        message: 'Registration successful',
-        user: { id: newUser._id, userName: newUser.userName, email: newUser.email },
-    });
-});
-
-// Login User
-const loginUser = asyncHandler(async (req, res) => {
+};
+// Login
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) {
-        return res.status(404).json({
+    try {
+        const checkUser = await User.findOne({ email });
+        if (!checkUser)
+            return res.json({
+                success: false,
+                message: "User doesn't exists! Please register first",
+            });
+
+        const checkPasswordMatch = await bcrypt.compare(
+            password,
+            checkUser.password
+        );
+        if (!checkPasswordMatch)
+            return res.json({
+                success: false,
+                message: "Incorrect password! Please try again",
+            });
+
+        const token = jwt.sign(
+            {
+                id: checkUser._id,
+                role: checkUser.role,
+                email: checkUser.email,
+                userName: checkUser.userName,
+            },
+            "CLIENT_SECRET_KEY",
+            { expiresIn: "60m" }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Login successfully",
+            token,
+            user: {
+                email: checkUser.email,
+                role: checkUser.role,
+                id: checkUser._id,
+                userName: checkUser.userName,
+            },
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({
             success: false,
-            message: "User doesn't exist. Please register first.",
+            message: "Some error occured",
         });
     }
+};
 
-    // Compare password
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) {
-        return res.status(401).json({
-            success: false,
-            message: 'Incorrect password! Please try again.',
-        });
-    }
 
-    // Generate JWT token (expires in 60 minutes)
-    const token = jwt.sign(
-        { id: user._id, role: user.role, email: user.email, userName: user.userName },
-        CLIENT_SECRET_KEY,
-        { expiresIn: '60m' }
-    );
-
-    res.status(200).json({
-        success: true,
-        message: 'Logged in successfully',
-        token,
-        user: { id: user._id, userName: user.userName, email: user.email, role: user.role },
-    });
-});
-
-// Logout User (clear token)
+// Logout
 const logOutUser = (req, res) => {
     res.clearCookie('token', { httpOnly: true, secure: true }).json({
         success: true,
@@ -82,7 +101,7 @@ const logOutUser = (req, res) => {
     });
 };
 
-// Auth Middleware (to protect routes)
+// Auth Middleware
 const authMiddleware = asyncHandler(async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -90,26 +109,16 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     if (!token) {
         return res.status(401).json({
             success: false,
-            message: 'Unauthorized! No token provided.',
+            message: 'Unauthorized user!',
         });
     }
 
     try {
-        // Verify JWT token
         const decoded = jwt.verify(token, CLIENT_SECRET_KEY);
-        req.user = decoded; // Attach user to the request object
-        next(); // Proceed to the next middleware/route
+        req.user = decoded;
+        next();
     } catch (error) {
         console.error('JWT Verification Error:', error.message);
-
-        // If the token is expired, send specific message
-        if (error.name === 'TokenExpiredError') {
-            return res.status(403).json({
-                success: false,
-                message: 'Token expired. Please log in again.',
-            });
-        }
-
         res.status(403).json({
             success: false,
             message: 'Invalid token! Unauthorized access.',
