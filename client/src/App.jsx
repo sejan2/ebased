@@ -1,97 +1,90 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import AuthLayout from "./components/auth/layout";
+import AuthLogin from "./pages/auth/login";
+import AuthRegister from "./pages/auth/register";
+import AdminLayout from "./components/admin-view/layout";
+import AdminDashboard from "./pages/admin-view/dashboard";
+import AdminProducts from "./pages/admin-view/products";
+import AdminOrders from "./pages/admin-view/orders";
+import AdminFeatures from "./pages/admin-view/features";
+import ShoppingLayout from "./components/shopping-view/layout";
+import NotFound from "./pages/not-found";
+import ShoppingHome from "./pages/shopping-view/home";
+import ShoppingListing from "./pages/shopping-view/listing";
+import ShoppingCheckout from "./pages/shopping-view/checkout";
+import ShoppingAccount from "./pages/shopping-view/account";
+import CheckAuth from "./components/common/check-auth";
+import UnauthPage from "./pages/unauth-page";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import React, { Suspense } from "react";
 import { checkAuth } from "./store/auth-slice";
-
-// Lazy imports
-const AuthLogin = React.lazy(() => import("./pages/auth/login"));
-const AuthRegister = React.lazy(() => import("./pages/auth/register"));
-const AuthLayout = React.lazy(() => import("./components/auth/layout"));
-const AdminLayout = React.lazy(() => import("./components/admin-view/layout"));
-const AdminDashboard = React.lazy(() =>
-  import("./pages/admin-view/dashboard")
-);
-const AdminProducts = React.lazy(() => import("./pages/admin-view/products"));
-const AdminOrders = React.lazy(() => import("./pages/admin-view/orders"));
-const ShoppingViewLayout = React.lazy(() =>
-  import("./components/shopping-view/layout")
-);
-const NotFound = React.lazy(() => import("./components/shopping-view/notfound"));
-const ShoppingHome = React.lazy(() => import("./pages/shopping-view/home"));
-const ShoppingListing = React.lazy(() =>
-  import("./pages/shopping-view/listing")
-);
-const ShoppingAccount = React.lazy(() =>
-  import("./pages/shopping-view/account")
-);
-const CheckAuth = React.lazy(() => import("./components/common/check-auth"));
+import { Skeleton } from "@/components/ui/skeleton";
+import OrderSuccessPage from "./pages/shopping-view/order-success";
+import SearchProducts from "./pages/shopping-view/search";
 
 function App() {
-  const { isAuthenticated, user, isLoading } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = JSON.parse(sessionStorage.getItem("token"));
-    dispatch(checkAuth(token));
+    dispatch(checkAuth());
   }, [dispatch]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          {/* Default Route */}
-          <Route
-            path="/"
-            element={
-              isAuthenticated
-                ? user?.role === "admin"
-                  ? <Navigate to="/admin/dashboard" replace />
-                  : <Navigate to="/shop/home" replace />
-                : <Navigate to="/shop/home" replace />
-            }
-          />
-
-          {/* Authentication Routes */}
-          <Route path="/auth" element={<AuthLayout />}>
-            <Route path="login" element={<AuthLogin />} />
-            <Route path="register" element={<AuthRegister />} />
-          </Route>
-
-          {/* Admin Routes (Protected) */}
-          <Route
-            path="/admin"
-            element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user} isAdminRequired={true}>
-                <AdminLayout />
-              </CheckAuth>
-            }
-          >
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="orders" element={<AdminOrders />} />
-          </Route>
-
-          {/* Shop Routes (Open for all users, but admin is redirected) */}
-          <Route
-            path="/shop"
-            element={
-              user?.role === "admin"
-                ? <Navigate to="/admin/dashboard" replace /> // Redirect admins from shop to admin dashboard
-                : <ShoppingViewLayout /> // Non-admin users can access shop routes
-            }
-          >
-            <Route path="home" element={<ShoppingHome />} />
-            <Route path="listing" element={<ShoppingListing />} />
-            <Route path="account" element={<ShoppingAccount />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-
-
-      </Suspense>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user} />
+          }
+        />
+        <Route
+          path="/auth"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <AuthLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="login" element={<AuthLogin />} />
+          <Route path="register" element={<AuthRegister />} />
+        </Route>
+        <Route
+          path="/admin"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <AdminLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="features" element={<AdminFeatures />} />
+        </Route>
+        <Route
+          path="/shop"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <ShoppingLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="home" element={<ShoppingHome />} />
+          <Route path="listing" element={<ShoppingListing />} />
+          <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="account" element={<ShoppingAccount />} />
+          <Route path="order-success" element={<OrderSuccessPage />} />
+          <Route path="search" element={<SearchProducts />} />
+        </Route>
+        <Route path="/unauth-page" element={<UnauthPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 }
